@@ -3,11 +3,10 @@ import { getPostsBySlug } from '@/lib/queries';
 
 type Props = {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-  { params, searchParams }: Props,
+  { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const post = await getPostsBySlug((await params).slug);
