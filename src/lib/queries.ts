@@ -72,6 +72,16 @@ export async function getAllPosts(
           excerpt
           date
           slug
+          author {
+            node {
+              name
+            }
+          }
+          featuredImage {
+            node {
+              sourceUrl
+            }
+          }
           categories {
             nodes {
               name
