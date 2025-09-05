@@ -11,11 +11,10 @@ export default async function Page() {
   try {
     const data = await getAllPosts();
     posts = data.posts;
+    // Perbaikan: Ambil pageInfo dari data.pageInfo
     pageInfo = data.pageInfo;
   } catch (error) {
     console.error("Gagal mengambil artikel saat build:", error);
-    // Jika pengambilan data gagal, posts dan pageInfo tetap kosong, 
-    // tapi build tidak akan gagal.
   }
 
   const latestPostProps = {
