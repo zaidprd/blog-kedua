@@ -1,8 +1,8 @@
 export type PageInfo = {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-  startCursor: string | null; // Tambahkan `| null`
-  endCursor: string | null;   // Tambahkan `| null`
+  startCursor: string | null;
+  endCursor: string | null;
 };
 
 export type Post = {
@@ -16,9 +16,11 @@ export type Post = {
       name: string;
     }
   }
+  // ✅ Perbaikan: nodes adalah array dari objek Category
   categories: {
     nodes: Category[];
   }
+  // ✅ Perbaikan: nodes adalah array dari objek yang punya properti name
   tags: {
     nodes: {
       name: string;

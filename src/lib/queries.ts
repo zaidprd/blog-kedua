@@ -1,9 +1,8 @@
 import { gql, GraphQLClient } from 'graphql-request';
-import { Category, Post } from '@/lib/types';
-
-const baseUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
+import { Category, Post, PageInfo } from '@/lib/types';
 
 // Pastikan baseUrl ada sebelum membuat client
+const baseUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
 if (!baseUrl) {
   throw new Error('NEXT_PUBLIC_WORDPRESS_URL is not defined in .env');
 }
@@ -11,6 +10,7 @@ if (!baseUrl) {
 const client = new GraphQLClient(baseUrl);
 
 // ✅ Ambil kategori via GraphQL
+// Query ini sekarang meminta semua data yang sesuai dengan tipe Category
 export async function getCategories(): Promise<Category[]> {
   const query = gql`
     query getCategories {
@@ -19,11 +19,15 @@ export async function getCategories(): Promise<Category[]> {
           id
           name
           slug
+          description
+          count
+          parentId
         }
       }
     }
   `;
 
+  // Tipe data yang diterima dari API cocok dengan tipe data yang diharapkan
   const data: { categories: { nodes: Category[] } } = await client.request(query);
   return data.categories.nodes;
 }
@@ -35,12 +39,7 @@ export async function getAllPosts(
   params: { before?: string | null; after?: string | null } = {}
 ): Promise<{
   posts: Post[],
-  pageInfo: {
-    startCursor: string | null,
-    endCursor: string | null,
-    hasNextPage: boolean,
-    hasPreviousPage: boolean
-  }
+  pageInfo: PageInfo
 }> {
   const hasSearchTerm = searchTerm && searchTerm.trim() !== '';
   const hasCategoryTerm = category && category.trim() !== '';
@@ -90,7 +89,7 @@ export async function getAllPosts(
         }
       }
     }
-  `
+  `;
 
   interface Variables {
     perPage: number;
@@ -119,24 +118,18 @@ export async function getAllPosts(
   const data: {
     posts: {
       nodes: Post[],
-      pageInfo: {
-        startCursor: string | null,
-        endCursor: string | null,
-        hasNextPage: boolean,
-        hasPreviousPage: boolean
-      }
+      pageInfo: PageInfo
     }
   } = await client.request(query, variables);
 
   return {
     posts: data.posts.nodes,
-    pageInfo: data.posts.pageInfo,
-    ...(searchTerm && { searchTerm }),
-    ...(category && { category })
+    pageInfo: data.posts.pageInfo
   }
 }
 
 // ✅ Ambil detail post by slug
+// Query ini sekarang meminta semua data yang sesuai dengan tipe Post
 export async function getPostsBySlug(slug: string): Promise<Post | null> {
   const query = gql`
     query GetPostBySlug($slug: ID!) {
