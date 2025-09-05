@@ -1,22 +1,20 @@
-// src/app/page.tsx
-
 import { LatestPosts } from '@/components/latest-posts';
-import { getAllPosts } from '@/lib/queries';
-import { Post, PageInfo } from '@/lib/types';
+import { getAllPosts, getCategories } from '@/lib/queries';
+import { Post, PageInfo, Category } from '@/lib/types';
+import Categories from '@/components/categories';
 
 export default async function Page() {
   let posts: Post[] = [];
   let pageInfo: PageInfo | null = null;
-  
+  let categories: Category[] = [];
+
   try {
     const data = await getAllPosts();
     posts = data.posts;
-    // Ambil pageInfo dari objek data
     pageInfo = data.pageInfo;
+    categories = await getCategories();
   } catch (error) {
-    console.error("Gagal mengambil artikel saat build:", error);
-    // Jika pengambilan data gagal, posts dan pageInfo tetap kosong, 
-    // tapi build tidak akan gagal.
+    console.error("Failed to fetch data on home page:", error);
   }
 
   const latestPostProps = {
@@ -27,8 +25,9 @@ export default async function Page() {
   };
 
   return (
-    <section>
+    <>
+      <Categories categories={categories} />
       <LatestPosts {...latestPostProps} />
-    </section>
+    </>
   );
 }
