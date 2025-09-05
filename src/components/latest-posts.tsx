@@ -1,18 +1,22 @@
+// src/components/latest-posts.tsx
+
 import { SearchBar } from "@/components/search-bar";
-import { Post } from '@/lib/types';
+import { Post, PageInfo } from '@/lib/types'; // Import PageInfo dari types.ts
 import Link from "next/link";
 
+// Definisikan tipe props dengan lebih jelas
 type LatestPostsProps = {
   posts: Post[];
   title?: string;
   searchTerm?: string;
-  pageInfo?: { startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean };
+  // Gunakan tipe PageInfo yang sudah diperbaiki
+  pageInfo: PageInfo | null;
   category?: string;
 }
 
 export function LatestPosts({ posts, searchTerm, pageInfo, category }: LatestPostsProps) {
 
-  if (posts?.length === 0) {
+  if (!posts || posts.length === 0) {
     return <div>No posts available.</div>
   }
 
@@ -38,18 +42,18 @@ export function LatestPosts({ posts, searchTerm, pageInfo, category }: LatestPos
         ))}
       </div>
 
-
-
+      {/* Navigasi Halaman */}
       <div className="flex justify-between">
+        {/* Tombol Previous */}
         <div>
-
           {pageInfo?.hasPreviousPage && (
             <Link
               href={{
                 pathname: '/blog',
                 query: {
                   before: pageInfo.startCursor,
-                  ...((searchTerm || category) && { searchTerm, category })
+                  ...(searchTerm && { searchTerm }),
+                  ...(category && { category })
                 }
               }}
             >
@@ -58,6 +62,7 @@ export function LatestPosts({ posts, searchTerm, pageInfo, category }: LatestPos
           )}
         </div>
 
+        {/* Tombol Next */}
         <div>
           {pageInfo?.hasNextPage && (
             <Link
@@ -65,7 +70,8 @@ export function LatestPosts({ posts, searchTerm, pageInfo, category }: LatestPos
                 pathname: '/blog',
                 query: {
                   after: pageInfo.endCursor,
-                  ...((searchTerm || category) && { searchTerm, category })
+                  ...(searchTerm && { searchTerm }),
+                  ...(category && { category })
                 }
               }}
             >
@@ -74,15 +80,6 @@ export function LatestPosts({ posts, searchTerm, pageInfo, category }: LatestPos
           )}
         </div>
       </div>
-
-
-
-
-
-
-
-
-
     </div>
   )
 }
