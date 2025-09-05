@@ -1,7 +1,7 @@
 import { LatestPosts } from '@/components/latest-posts';
 import { getAllPosts, getCategories } from '@/lib/queries';
 import { Post, PageInfo, Category } from '@/lib/types';
-import Categories from '@/components/categories';
+import { Categories } from '@/components/categories';
 
 export default async function Page() {
   let posts: Post[] = [];
