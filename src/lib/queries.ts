@@ -1,27 +1,34 @@
-const baseUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
 import { gql, GraphQLClient } from 'graphql-request';
 import { Category, Post } from '@/lib/types';
 
-const client = new GraphQLClient(`${baseUrl}/graphql`);
+const baseUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
 
+// Pastikan baseUrl ada sebelum membuat client
+if (!baseUrl) {
+  throw new Error('NEXT_PUBLIC_WORDPRESS_URL is not defined in .env');
+}
+
+const client = new GraphQLClient(baseUrl);
+
+// ✅ Ambil kategori via GraphQL
 export async function getCategories(): Promise<Category[]> {
   const query = gql`
-  query getCategories {
-    categories(first: 100) {
-      nodes {
-        id
-        name
-        slug
+    query getCategories {
+      categories(first: 100) {
+        nodes {
+          id
+          name
+          slug
+        }
       }
     }
-  }
   `;
 
   const data: { categories: { nodes: Category[] } } = await client.request(query);
   return data.categories.nodes;
 }
 
-
+// ✅ Ambil semua post (bisa filter kategori & search)
 export async function getAllPosts(
   searchTerm: string = '',
   category: string = '',
@@ -39,7 +46,6 @@ export async function getAllPosts(
   const hasCategoryTerm = category && category.trim() !== '';
   const isPrevious = !!params.before;
 
-  // Definition
   const variableDefinitions = [
     '$perPage: Int!',
     isPrevious ? '$before: String' : '$after: String',
@@ -47,7 +53,6 @@ export async function getAllPosts(
     hasCategoryTerm ? '$categorySlug: String' : '',
   ].filter(Boolean).join(', ');
 
-  // Where Clause
   const whereConditions = [
     hasSearchTerm ? 'search: $search': '',
     hasCategoryTerm ? 'categoryName: $categorySlug': ''
@@ -129,11 +134,10 @@ export async function getAllPosts(
     ...(searchTerm && { searchTerm }),
     ...(category && { category })
   }
-
 }
 
-
-export async function getPostsBySlug(slug: string) : Promise<Post | null> {
+// ✅ Ambil detail post by slug
+export async function getPostsBySlug(slug: string): Promise<Post | null> {
   const query = gql`
     query GetPostBySlug($slug: ID!) {
       post(id: $slug, idType: SLUG) {
@@ -161,8 +165,6 @@ export async function getPostsBySlug(slug: string) : Promise<Post | null> {
   `;
 
   const variables = { slug };
-  const data : { post: Post } = await client.request(query, variables);
+  const data: { post: Post } = await client.request(query, variables);
   return data.post;
 }
-
-
