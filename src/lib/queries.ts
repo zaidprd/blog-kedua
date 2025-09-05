@@ -10,7 +10,6 @@ if (!baseUrl) {
 const client = new GraphQLClient(baseUrl);
 
 // ✅ Ambil kategori via GraphQL
-// Query ini sekarang meminta semua data yang sesuai dengan tipe Category
 export async function getCategories(): Promise<Category[]> {
   const query = gql`
     query getCategories {
@@ -27,7 +26,6 @@ export async function getCategories(): Promise<Category[]> {
     }
   `;
 
-  // Tipe data yang diterima dari API cocok dengan tipe data yang diharapkan
   const data: { categories: { nodes: Category[] } } = await client.request(query);
   return data.categories.nodes;
 }
@@ -129,7 +127,6 @@ export async function getAllPosts(
 }
 
 // ✅ Ambil detail post by slug
-// Query ini sekarang meminta semua data yang sesuai dengan tipe Post
 export async function getPostsBySlug(slug: string): Promise<Post | null> {
   const query = gql`
     query GetPostBySlug($slug: ID!) {
