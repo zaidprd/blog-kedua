@@ -6,30 +6,37 @@ export type PageInfo = {
 };
 
 export type Post = {
-  id: string; // Atau 'number', sesuaikan dengan data API
+  id: string;
   title: string;
   slug: string;
   date: string;
   content: string;
+  excerpt: string;
   author: {
     node: {
       name: string;
     }
-  }
-  // ✅ Perbaikan: nodes adalah array dari objek Category
+  };
+  featuredImage: {
+    node: {
+      sourceUrl: string;
+    };
+  };
   categories: {
     nodes: Category[];
-  }
-  // ✅ Perbaikan: nodes adalah array dari objek yang punya properti name
+  };
   tags: {
     nodes: {
       name: string;
     }[];
-  }
+  };
 };
 
 export type Category = {
   id: string;
   name: string;
   slug: string;
+  description: string | null;
+  count: number;
+  parentId: string | null;
 };
