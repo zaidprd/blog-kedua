@@ -1,6 +1,8 @@
+// src/app/page.tsx
+
 import { LatestPosts } from '@/components/latest-posts';
 import { getAllPosts } from '@/lib/queries';
-import { Post, PageInfo } from '@/lib/types'; // Import tipe dari satu sumber
+import { Post, PageInfo } from '@/lib/types';
 
 export default async function Page() {
   let posts: Post[] = [];
@@ -12,7 +14,8 @@ export default async function Page() {
     pageInfo = data.pageInfo;
   } catch (error) {
     console.error("Gagal mengambil artikel saat build:", error);
-    // Data tetap kosong, tetapi build akan berhasil
+    // Jika pengambilan data gagal, posts dan pageInfo tetap kosong, 
+    // tapi build tidak akan gagal.
   }
 
   const latestPostProps = {
